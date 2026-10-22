@@ -63,6 +63,7 @@ class State:
         self.lock = threading.Lock()
         self.last_rx = 0.0
         self.total = 0
+        self.session = None
         self.have_offsets = bool(off.get(a.stream_host))
 
     def listen(self):
@@ -75,9 +76,12 @@ class State:
                 except (ValueError, KeyError):
                     continue
                 head, _, body = raw.partition(b"\n")
-                m = re.match(rb"FRAG\|(\d+)\|([\d.]+)", head)
+                m = re.match(rb"FRAG\|(\d+)\|([\d.]+)(?:\|(\d+))?", head)
                 if m and int(m.group(1)) < 900:
                     with self.lock:
+                        sess = int(m.group(3) or 0)
+                        if sess != self.session:       # a new stream started: forget the old run's fragments
+                            self.f.clear(); self.total = 0; self.session = sess
                         if int(m.group(1)) not in self.f:
                             self.total += 1
                         self.f.setdefault(int(m.group(1)), {"b": body, "arrived": t, "ready": float(m.group(2)) - self.off})

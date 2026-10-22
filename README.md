@@ -46,6 +46,25 @@ The page shows the video, a counter of received / missing fragments, and the del
 Messages are live-only: you see the stream from the moment you start the viewer, and you miss what was sent before. If the host is not streaming yet,
 it says "waiting for the first fragment".
 
+
+## Broadcasting (the sender side)
+
+The viewer above only receives. To send your own video into the room's message channel:
+
+1. Join the room as a member with the `publish` grant on the video channel (the host gives you an invitation for that).
+2. Make the video available as MPEG-TS with a **keyframe every second**:
+   - **From OBS:** Settings, Output, Advanced, Recording type **Custom Output (FFmpeg)**, "Output to URL" `udp://127.0.0.1:9000?pkt_size=1316`, container `mpegts`,
+     video encoder libx264 (`preset=ultrafast tune=zerolatency`), keyframe interval 25 frames at 25 fps (1 s), about 800 kbps at 854x480, audio AAC. Then press **Start Recording**.
+   - **From a file:** nothing to do; the sender plays it in real time (`--loop` repeats it). Encode it with `-g 25 -keyint_min 25 -sc_threshold 0`.
+3. Run the sender (needs ffmpeg and the signed-in Beam CLI):
+
+       python3 sender.py --room ROOM_ID --channel CHANNEL_ID --source 'udp://127.0.0.1:9000?fifo_size=5000000&overrun_nonfatal=1' --out ./out --parallel 12 --max-age 8
+
+   Fragments older than `--max-age` seconds are dropped instead of building a backlog. `--status-file FILE` writes the last publish time into a text file (OBS can show it).
+
+Measured on a 30 s clip with the sender on one continent and receivers on two others: about 1-3 s from "fragment complete" to "arrived", no fragment lost; a home connection that
+times out to the Beam coordinator made the delay and loss much worse. Messages are live-only, so a viewer sees the stream from the moment it starts listening.
+
 ## Notes
 
 - The delay column assumes your clock and the streamer's clock are both set by NTP (normal on laptops), so treat it as approximate.
