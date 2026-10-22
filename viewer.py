@@ -34,14 +34,14 @@ table{border-collapse:collapse;width:100%}th,td{text-align:right;padding:3px 8px
 </style>
 <header><h1>Video over Beam room messages</h1><span id=st class=mut>waiting for the first fragment…</span><span class=mut>480p · 1 s fragments · one Beam message each</span></header>
 <main>
-<section><video id=v controls muted autoplay playsinline></video>
+<section><div style="position:relative"><video id=v controls muted autoplay playsinline></video><button id=um style="position:absolute;right:12px;bottom:56px;padding:8px 14px;border-radius:18px;border:0;background:#e23646;color:#fff;font:600 14px system-ui;cursor:pointer">&#128263; Unmute</button></div>
  <div class=k><div><span class=mut>received</span><b id=n>0</b></div><div><span class=mut>missing</span><b id=miss>0</b></div><div><span class=mut>delay p50</span><b id=p50>-</b></div><div><span class=mut>delay last</span><b id=last>-</b></div><div><span class=mut>delay max</span><b id=max>-</b></div></div>
  <p class=mut>Delay = arrival here minus the moment the fragment was complete on the streamer, in seconds (<span id=sy></span>). Playback starts after 4 fragments are buffered.</p></section>
 <section><table><thead><tr><th>fragment<th>complete<th>arrived<th>delay s<th>KiB</tr></thead><tbody id=rows></tbody></table></section>
 </main>
 <script src="__HLS__"></script>
 <script>
-const $=id=>document.getElementById(id);let started=false;const f=t=>new Date(t*1000).toLocaleTimeString([], {hour12:false})+'.'+String(Math.floor((t%1)*10));
+const $=id=>document.getElementById(id);let started=false;$('um').onclick=()=>{const v=$('v');v.muted=false;v.volume=1;v.play().catch(()=>{});$('um').style.display='none'};const f=t=>new Date(t*1000).toLocaleTimeString([], {hour12:false})+'.'+String(Math.floor((t%1)*10));
 async function tick(){try{const s=await (await fetch('/stats')).json();
  $('n').textContent=s.n;$('miss').textContent=s.missing;$('p50').textContent=s.p50==null?'-':s.p50.toFixed(1);$('last').textContent=s.last==null?'-':s.last.toFixed(1);$('max').textContent=s.max==null?'-':s.max.toFixed(1);
  $('sy').textContent=s.synced?'clock offset corrected':'assumes both clocks are set by NTP, so treat it as approximate';$('st').textContent=s.n?('receiving · '+s.n+' fragments'+(s.ended?' · stream ended':'')):'waiting for the first fragment…';

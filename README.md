@@ -65,6 +65,10 @@ The viewer above only receives. To send your own video into the room's message c
 Measured on a 30 s clip with the sender on one continent and receivers on two others: about 1-3 s from "fragment complete" to "arrived", no fragment lost; a home connection that
 times out to the Beam coordinator made the delay and loss much worse. Messages are live-only, so a viewer sees the stream from the moment it starts listening.
 
+## Running a stage machine
+
+`workstation/` has the scripts that turn a small Ubuntu server into a streaming workstation (OBS scenes with Beam graphics, Discord, remote scene control, and the sender) - see `workstation/README.md`.
+
 ## Notes
 
 - The delay column assumes your clock and the streamer's clock are both set by NTP (normal on laptops), so treat it as approximate.
