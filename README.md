@@ -7,8 +7,7 @@ it from what Beam delivers to you. Nothing is streamed over a normal web server.
 
 The room ID below is only valid while the host has the room open (they run it for a test and close it afterwards); ask them if it is live.
 
-You need: Linux or macOS, Python 3.9+, a Beam account (free sign-in at the Beam login page), and an invitation file from the host. **Ask the host for
-the invitation file privately; do not post it anywhere. It is the key to the room.**
+You need: Linux or macOS, Python 3.9+, a Beam account (free sign-in at the Beam login page), and an invitation file from the host. The invitation is `invite.json` in this repository (single use, valid until 23:17 UTC on 2026-10-22); if it is used up or expired, ask the host for a new one. It is the key to the room, so treat it like one.
 
 
 ## Quick start with Docker (no install on your machine)
