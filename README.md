@@ -10,7 +10,17 @@ The room ID below is only valid while the host has the room open (they run it fo
 You need: Linux or macOS, Python 3.9+, a Beam account (free sign-in at the Beam login page), and an invitation file from the host. **Ask the host for
 the invitation file privately; do not post it anywhere. It is the key to the room.**
 
-## Steps
+
+## Quick start with Docker (no install on your machine)
+
+    docker build -t beam-live-viewer https://github.com/mo0haned/beam-room-live-viewer.git
+    docker run --rm -it -p 8820:8820 -v beam-live:/data -v "$PWD/invite.json:/invite.json:ro" beam-live-viewer ROOM_ID
+
+Then open http://127.0.0.1:8820/. The first run prints a Beam sign-in link and code (approve it in a browser); the `beam-live` volume remembers your
+login and agent, so later runs only need the room ID. Instead of the interactive sign-in you can pass a Beam API key: `-e BEAM_API_KEY`.
+Set `-e LABEL=my-name` to name your machine in Beam. The invitation file is only needed the first time.
+
+## Steps (without Docker)
 
 1. Install the Beam CLI (read the script first if you like: https://cdn.b1m.ai/cli/install.sh):
 

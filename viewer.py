@@ -147,7 +147,7 @@ def handler(S):
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--room", required=True); ap.add_argument("--channel", help="channel id; if omitted the channel named --channel-name is looked up in the room"); ap.add_argument("--channel-name", default="vmsg")
-    ap.add_argument("--offsets"); ap.add_argument("--stream-host", default=""); ap.add_argument("--port", type=int, default=8820)
+    ap.add_argument("--offsets"); ap.add_argument("--stream-host", default=""); ap.add_argument("--port", type=int, default=8820); ap.add_argument("--bind", default="127.0.0.1", help="listen address (the Docker image uses 0.0.0.0)")
     a = ap.parse_args()
     if not a.channel:       # find the video channel by name, so only the room id has to be shared
         out = subprocess.run(["beam", "--json", "room", "channel", "list", a.room], capture_output=True, text=True)
@@ -157,6 +157,6 @@ if __name__ == "__main__":
             raise SystemExit(f"could not find a channel named {a.channel_name!r} in {a.room}; are you a member of the room? ({(out.stderr or out.stdout)[-200:]})")
     S = State(a)
     threading.Thread(target=S.listen, daemon=True).start()
-    srv = ThreadingHTTPServer(("127.0.0.1", a.port), handler(S)); srv.daemon_threads = True
+    srv = ThreadingHTTPServer((a.bind, a.port), handler(S)); srv.daemon_threads = True
     print(f"viewer: http://127.0.0.1:{a.port}/", flush=True)
     srv.serve_forever()
